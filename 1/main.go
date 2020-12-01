@@ -17,10 +17,11 @@ func main() {
 	}
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
-	var text []string
+	var numList []int
 	
 	for scanner.Scan() {
-		text = append(text, scanner.Text())
+		number, _ := strconv.Atoi(scanner.Text())
+		numList = append(numList, number)
 	}
 	
 	file.Close()
@@ -29,16 +30,34 @@ func main() {
 	* The solution from this line
 	**/
 	
-	recorder := make(map[int]int)
+	type pair struct {
+		value1 int
+		value2 int
+	}
+	sumsRecord := make(map[int]pair)
 	
-	for _, eachLn := range text {
-		i, _ := strconv.Atoi(eachLn)
-		diff := 2020 - i
-		perDiff, ok := recorder[i]
+	for i, firstOfPair := range numList {
+		
+		var numList2 = numList[i+1:]
+		for _, secondOfPair := range numList2 {
+			sumOfPairs := firstOfPair + secondOfPair
+			if (sumOfPairs) == 2020 {
+				fmt.Println("ans1 = ", firstOfPair*secondOfPair)
+			}
+			if (sumOfPairs) < 2020 {
+				sumsRecord[sumOfPairs] = pair{
+					firstOfPair, secondOfPair,
+				}
+			}
+		}
+	}
+	
+	for _, num := range numList {
+		diff := 2020 - num
+		perDiff, ok := sumsRecord[diff]
 		if ok {
-			fmt.Println(perDiff * i)
+			fmt.Println("ans2 = ", perDiff.value1*perDiff.value2*num)
 			return
 		}
-		recorder[diff] = i
 	}
 }
